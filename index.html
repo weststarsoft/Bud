@@ -570,49 +570,54 @@
     border-radius: 20px;
   }
 
-  /* Carousel arrows — floating beside card */
-  .carousel-controls {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-    margin-top: 32px;
-    align-items: center;
-  }
+  /* Carousel arrows — floating over lateral cards */
   .carousel-arrow {
-    width: 48px; height: 48px;
-    border: 1px solid rgba(10,10,10,0.15);
-    background: #fff;
+    width: 44px; height: 44px;
+    border: 1px solid rgba(10,10,10,0.2);
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(8px);
     color: var(--black);
     display: flex; align-items: center; justify-content: center;
     cursor: none;
-    transition: all 0.25s ease;
+    transition: all 0.3s ease;
     font-size: 18px;
     border-radius: 50%;
-    box-shadow: 0 2px 12px rgba(10,10,10,0.08);
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     z-index: 10;
+    opacity: 0.4;
   }
-  .carousel-arrow.prev { left: calc(50% - 230px); }
-  .carousel-arrow.next { right: calc(50% - 230px); }
+  .carousel-arrow.prev { left: 60px; }
+  .carousel-arrow.next { right: 60px; }
   .carousel-arrow:hover {
-    background: var(--black);
-    color: #fff;
-    border-color: var(--black);
+    opacity: 1;
+    background: rgba(255,255,255,0.9);
+    border-color: rgba(10,10,10,0.4);
   }
-  .carousel-counter {
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    color: rgba(10,10,10,0.3);
+
+  /* Dash indicators */
+  .carousel-dashes {
     display: flex;
-    align-items: center;
-    gap: 4px;
     justify-content: center;
-    margin-top: 32px;
+    align-items: center;
+    gap: 8px;
+    margin-top: 28px;
   }
-  .carousel-counter .cur { color: var(--black); }
+  .carousel-dash {
+    height: 2px;
+    width: 16px;
+    background: rgba(10,10,10,0.2);
+    border: none;
+    padding: 0;
+    cursor: none;
+    transition: width 0.4s cubic-bezier(0.23,1,0.32,1), background 0.3s ease;
+    border-radius: 2px;
+  }
+  .carousel-dash.active {
+    width: 32px;
+    background: var(--black);
+  }
 
   /* cat cards rounded */
   .cat-card {
@@ -645,6 +650,7 @@
 
     .carousel-arrow.prev { left: 8px; }
     .carousel-arrow.next { right: 8px; }
+    .carousel-arrow { opacity: 0.6; }
 
     #categories { padding: 60px 20px; }
     .cat-grid {
@@ -765,22 +771,9 @@
   .cat-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 2px;
+    gap: 12px;
     margin-top: 0;
   }
-
-  .cat-card {
-    aspect-ratio: 3/4;
-    position: relative;
-    overflow: hidden;
-    cursor: none;
-    display: flex;
-    align-items: flex-end;
-    background: var(--gray);
-    border: 1px solid rgba(245,245,240,0.04);
-    transition: border-color 0.3s ease;
-  }
-  .cat-card:hover { border-color: rgba(245,245,240,0.15); }
 
   .cat-bg {
     position: absolute;
@@ -951,7 +944,8 @@
   <div class="hero-slides">
 
     <div class="hero-slide active" id="slide-0">
-      <div class="slide-bg slide-1-bg"></div>
+      <div class="slide-bg" style="background: url('images/hero-1.jpg') center center / cover no-repeat; opacity:0.6;"></div>
+      <div class="slide-bg" style="background: linear-gradient(to bottom, rgba(10,10,10,0.3) 0%, rgba(10,10,10,0.7) 100%);"></div>
       <div class="hero-content">
         <span class="hero-tag">Nova Coleção · 2025</span>
         <h1 class="hero-title">DROP<br>01</h1>
@@ -1024,6 +1018,9 @@
     <div class="section-label">Coleção Drop 01</div>
     <h2 class="section-title reveal">A COLEÇÃO</h2>
 
+    <div style="position:relative; padding: 0 56px;">
+    <button class="carousel-arrow prev" onclick="prevCard()">←</button>
+    <button class="carousel-arrow next" onclick="nextCard()">→</button>
     <div class="carousel-wrap" id="carousel">
 
       <!-- Purple Gorilla -->
@@ -1117,13 +1114,14 @@
       </div>
 
     </div><!-- /carousel-wrap -->
+    </div><!-- /carousel-relative -->
 
-    <div class="carousel-controls">
-      <button class="carousel-arrow" onclick="prevCard()">←</button>
-      <div class="carousel-counter">
-        <span class="cur" id="cur-num">1</span><span>/</span><span>5</span>
-      </div>
-      <button class="carousel-arrow" onclick="nextCard()">→</button>
+    <div class="carousel-dashes" id="carousel-dashes">
+      <button class="carousel-dash active" onclick="goToCard(0)"></button>
+      <button class="carousel-dash" onclick="goToCard(1)"></button>
+      <button class="carousel-dash" onclick="goToCard(2)"></button>
+      <button class="carousel-dash" onclick="goToCard(3)"></button>
+      <button class="carousel-dash" onclick="goToCard(4)"></button>
     </div>
 
   </div>
@@ -1291,7 +1289,10 @@ function updateCarousel() {
     else if (offset === -2) card.classList.add('pos-left-2');
     else card.classList.add('pos-right-2');
   });
-  document.getElementById('cur-num').textContent = centerIndex + 1;
+  // sync dashes
+  document.querySelectorAll('.carousel-dash').forEach((d, i) => {
+    d.classList.toggle('active', i === centerIndex);
+  });
 }
 
 function nextCard() {
@@ -1300,6 +1301,10 @@ function nextCard() {
 }
 function prevCard() {
   centerIndex = (centerIndex - 1 + totalCards) % totalCards;
+  updateCarousel();
+}
+function goToCard(n) {
+  centerIndex = n;
   updateCarousel();
 }
 
