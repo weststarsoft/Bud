@@ -125,15 +125,24 @@
     position: relative;
     top: 14px;
     user-select: none;
-    transition: transform 0.3s ease;
+    transition: top 0.35s ease, transform 0.3s ease;
   }
   .logo img {
     height: 60px;
     width: auto;
     display: block;
     filter: drop-shadow(0 4px 20px rgba(255,255,255,0.08));
+    transition: height 0.35s ease;
   }
   .logo:hover { transform: scale(1.02); }
+
+  /* scrolled state — logo shrinks into header */
+  header.scrolled .logo {
+    top: 0;
+  }
+  header.scrolled .logo img {
+    height: 34px;
+  }
 
   /* Hamburger */
   .hamburger {
@@ -382,7 +391,7 @@
 
   /* ---- COLLECTION CAROUSEL ---- */
   #collection {
-    padding: 120px 0;
+    padding: 72px 0;
     background: var(--white);
     overflow: hidden;
   }
@@ -390,10 +399,10 @@
 
   .section-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(48px, 6vw, 80px);
+    font-size: clamp(40px, 5vw, 64px);
     line-height: 0.95;
     letter-spacing: -1px;
-    margin-bottom: 64px;
+    margin-bottom: 40px;
     color: var(--black);
   }
 
@@ -406,7 +415,7 @@
 
   .carousel-wrap {
     position: relative;
-    height: 620px;
+    height: 520px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -414,7 +423,7 @@
 
   .shirt-card {
     position: absolute;
-    width: 340px;
+    width: 300px;
     background: #fff;
     border: 1px solid rgba(10,10,10,0.08);
     border-radius: 16px;
@@ -455,7 +464,7 @@
 
   .shirt-visual {
     width: 100%;
-    height: 320px;
+    height: 260px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -672,6 +681,14 @@
   /* ---- CATEGORIAS ---- */
   #categories {
     padding: 120px 48px;
+  }
+
+  #categories .section-title {
+    color: var(--white);
+  }
+
+  #categories .section-label {
+    color: rgba(245,245,240,0.3);
   }
 
   .cat-grid {
@@ -1215,11 +1232,12 @@ function prevCard() {
   updateCarousel();
 }
 
-// Flip frente/verso
+// Flip frente/costas
 function flipCard(btn) {
   const card = btn.closest('.shirt-card');
   const idx = parseInt(card.dataset.index);
   let side = parseInt(card.dataset.side);
+  // toggle: 1=frente → 2=costas, 2=costas → 1=frente
   side = side === 1 ? 2 : 1;
   card.dataset.side = side;
   const img = card.querySelector('.shirt-img');
@@ -1228,6 +1246,8 @@ function flipCard(btn) {
     img.src = `images/${slugs[idx]}-${side}.png`;
     img.style.opacity = '1';
   }, 200);
+  // side===1 means we're NOW showing frente → button should say "Ver costas"
+  // side===2 means we're NOW showing costas → button should say "Ver frente"
   btn.textContent = side === 1 ? 'Ver costas' : 'Ver frente';
 }
 
