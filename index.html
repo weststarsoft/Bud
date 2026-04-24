@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BUD. — Streetwear</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --off-black: #111111;
+    --white: #f5f5f0;
+    --gray: #1a1a1a;
+    --gray-mid: #2a2a2a;
+    --purple: #8B5CF6;
+    --orange: #F97316;
+    --green: #22C55E;
+    --pink: #EC4899;
+    --blue: #38BDF8;
+    --yellow: #FACC15;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--white);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease, width 0.2s ease, height 0.2s ease, background 0.2s ease;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(245,245,240,0.4);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.08s ease;
+  }
+
+  /* CANVAS BACKGROUND */
+  #bg-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* NOISE OVERLAY */
+  .noise {
+    position: fixed;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: noise-shift 8s steps(2) infinite;
+  }
+  @keyframes noise-shift {
+    0% { transform: translate(0,0); }
+    25% { transform: translate(-1%,1%); }
+    50% { transform: translate(1%,-1%); }
+    75% { transform: translate(-1%,-1%); }
+    100% { transform: translate(0,0); }
+  }
+
+  /* ---- HEADER ---- */
+  header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    background: linear-gradient(to bottom, rgba(10,10,10,0.95) 0%, transparent 100%);
+    backdrop-filter: blur(2px);
+  }
+
+  .header-left, .header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    z-index: 2;
+    flex: 1;
+  }
+  .header-right { justify-content: flex-end; }
+
+  .logo-wrap {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 96px;
+    line-height: 1;
+    color: var(--white);
+    letter-spacing: -2px;
+    display: block;
+    position: relative;
+    top: 24px;
+    text-shadow: 0 4px 40px rgba(255,255,255,0.08);
+    user-select: none;
+    transition: transform 0.3s ease;
+  }
+  .logo:hover { transform: scale(1.02); }
+  .logo span { color: var(--white); }
+
+  /* Hamburger */
+  .hamburger {
+    width: 40px; height: 40px;
+    display: flex; flex-direction: column;
+    justify-content: center; gap: 6px;
+    cursor: none;
+    border: none; background: none;
+    padding: 4px;
+  }
+  .hamburger span {
+    display: block;
+    height: 1.5px;
+    background: var(--white);
+    transition: all 0.3s ease;
+    transform-origin: center;
+  }
+  .hamburger span:nth-child(1) { width: 24px; }
+  .hamburger span:nth-child(2) { width: 16px; }
+  .hamburger span:nth-child(3) { width: 20px; }
+  .hamburger:hover span { width: 24px; }
+  .hamburger.open span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); width: 24px; }
+  .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); width: 24px; }
+
+  /* Header icons */
+  .header-icon {
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: none;
+    border: 1px solid rgba(245,245,240,0.12);
+    border-radius: 50%;
+    transition: all 0.25s ease;
+    background: transparent;
+    text-decoration: none;
+    color: var(--white);
+  }
+  .header-icon:hover {
+    border-color: rgba(245,245,240,0.4);
+    background: rgba(245,245,240,0.05);
+  }
+  .header-icon svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* Cart badge */
+  .cart-wrap { position: relative; }
+  .cart-badge {
+    position: absolute;
+    top: -4px; right: -4px;
+    width: 16px; height: 16px;
+    background: var(--white);
+    color: var(--black);
+    border-radius: 50%;
+    font-size: 9px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+  }
+
+  /* NAV MENU */
+  .nav-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(10,10,10,0.98);
+    z-index: 99;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  .nav-overlay.open { opacity: 1; pointer-events: all; }
+  .nav-links { list-style: none; text-align: center; }
+  .nav-links li {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .nav-overlay.open .nav-links li:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0.1s; }
+  .nav-overlay.open .nav-links li:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 0.15s; }
+  .nav-overlay.open .nav-links li:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 0.2s; }
+  .nav-overlay.open .nav-links li:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 0.25s; }
+  .nav-overlay.open .nav-links li:nth-child(5) { opacity: 1; transform: translateY(0); transition-delay: 0.3s; }
+  .nav-links a {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    color: var(--white);
+    text-decoration: none;
+    opacity: 0.25;
+    transition: opacity 0.3s ease, letter-spacing 0.3s ease;
+    letter-spacing: 4px;
+    display: block;
+    line-height: 1.1;
+  }
+  .nav-links a:hover { opacity: 1; letter-spacing: 8px; }
+
+  /* ---- HERO ---- */
+  #hero {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    z-index: 2;
+  }
+
+  .hero-slides { width: 100%; height: 100%; position: relative; }
+  .hero-slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    padding: 120px 48px 80px;
+  }
+  .hero-slide.active { opacity: 1; }
+
+  .slide-bg {
+    position: absolute; inset: 0;
+    z-index: 0;
+  }
+  .slide-1-bg {
+    background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(139,92,246,0.18) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 80% 20%, rgba(236,72,153,0.1) 0%, transparent 60%),
+                var(--black);
+  }
+  .slide-2-bg {
+    background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(249,115,22,0.18) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 20% 80%, rgba(250,204,21,0.08) 0%, transparent 60%),
+                var(--black);
+  }
+  .slide-3-bg {
+    background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(34,197,94,0.14) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 70% 70%, rgba(56,189,248,0.08) 0%, transparent 60%),
+                var(--black);
+  }
+
+  .hero-content { position: relative; z-index: 1; text-align: center; max-width: 900px; }
+  .hero-tag {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(245,245,240,0.4);
+    margin-bottom: 24px;
+    display: block;
+  }
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(80px, 14vw, 180px);
+    line-height: 0.9;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+  }
+  .hero-sub {
+    font-size: 16px;
+    font-weight: 300;
+    color: rgba(245,245,240,0.5);
+    letter-spacing: 1px;
+    margin-bottom: 48px;
+  }
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid rgba(245,245,240,0.3);
+    padding: 14px 32px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--white);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    cursor: none;
+  }
+  .hero-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--white);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s ease;
+    z-index: -1;
+  }
+  .hero-cta:hover { color: var(--black); border-color: var(--white); }
+  .hero-cta:hover::before { transform: scaleX(1); }
+
+  /* Hero dots */
+  .hero-dots {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 5;
+  }
+  .hero-dot {
+    width: 24px; height: 2px;
+    background: rgba(245,245,240,0.2);
+    transition: background 0.3s ease, width 0.3s ease;
+    cursor: none;
+    border: none;
+  }
+  .hero-dot.active { background: var(--white); width: 48px; }
+
+  /* Drip SVG */
+  .drip-container {
+    position: absolute;
+    bottom: -2px; left: 0; right: 0;
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  /* ---- SECTIONS ---- */
+  section { position: relative; z-index: 2; }
+
+  .section-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: rgba(245,245,240,0.3);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 48px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: rgba(245,245,240,0.15);
+  }
+
+  /* ---- COLLECTION CAROUSEL ---- */
+  #collection {
+    padding: 120px 0;
+    background: var(--black);
+    overflow: hidden;
+  }
+  #collection .inner { padding: 0 48px; }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 6vw, 80px);
+    line-height: 0.95;
+    letter-spacing: -1px;
+    margin-bottom: 64px;
+  }
+
+  .carousel-wrap {
+    position: relative;
+    height: 560px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .shirt-card {
+    position: absolute;
+    width: 340px;
+    background: var(--gray);
+    border: 1px solid rgba(245,245,240,0.06);
+    padding: 0;
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    cursor: none;
+    overflow: hidden;
+  }
+
+  .shirt-card.pos-center {
+    transform: translateX(0) scale(1);
+    z-index: 5;
+    filter: none;
+  }
+  .shirt-card.pos-left-1 {
+    transform: translateX(-380px) scale(0.82);
+    z-index: 3;
+    filter: brightness(0.4);
+  }
+  .shirt-card.pos-right-1 {
+    transform: translateX(380px) scale(0.82);
+    z-index: 3;
+    filter: brightness(0.4);
+  }
+  .shirt-card.pos-left-2 {
+    transform: translateX(-660px) scale(0.68);
+    z-index: 1;
+    filter: brightness(0.2);
+  }
+  .shirt-card.pos-right-2 {
+    transform: translateX(660px) scale(0.68);
+    z-index: 1;
+    filter: brightness(0.2);
+  }
+
+  .shirt-visual {
+    width: 100%;
+    height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shirt-svg-wrap {
+    width: 200px;
+    height: 240px;
+    position: relative;
+  }
+
+  /* T-shirt SVG icon */
+  .tshirt-icon {
+    width: 200px;
+    height: 240px;
+  }
+
+  .shirt-glow {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 200px; height: 80px;
+    border-radius: 50%;
+    filter: blur(30px);
+    opacity: 0.5;
+  }
+
+  .shirt-info {
+    padding: 24px;
+    border-top: 1px solid rgba(245,245,240,0.06);
+  }
+
+  .strain-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .strain-type {
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(245,245,240,0.3);
+    margin-bottom: 16px;
+  }
+  .strain-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .shirt-effects {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .effect-pill {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border: 1px solid rgba(245,245,240,0.15);
+    color: rgba(245,245,240,0.5);
+  }
+
+  /* Carousel arrows */
+  .carousel-controls {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 48px;
+  }
+  .carousel-arrow {
+    width: 52px; height: 52px;
+    border: 1px solid rgba(245,245,240,0.15);
+    background: transparent;
+    color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    cursor: none;
+    transition: all 0.25s ease;
+    font-size: 20px;
+  }
+  .carousel-arrow:hover {
+    background: rgba(245,245,240,0.08);
+    border-color: rgba(245,245,240,0.4);
+  }
+  .carousel-counter {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(245,245,240,0.3);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 52px;
+    justify-content: center;
+  }
+  .carousel-counter .cur { color: var(--white); }
+
+  /* ---- BANNER ESTREITO ---- */
+  #launch-banner {
+    padding: 0;
+    background: var(--off-black);
+    border-top: 1px solid rgba(245,245,240,0.06);
+    border-bottom: 1px solid rgba(245,245,240,0.06);
+    overflow: hidden;
+  }
+  .banner-inner {
+    padding: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    position: relative;
+  }
+  .banner-inner::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--white);
+  }
+  .banner-left { flex: 1; }
+  .banner-tag {
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(245,245,240,0.35);
+    margin-bottom: 8px;
+    display: block;
+  }
+  .banner-headline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 5vw, 64px);
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+  .banner-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-shrink: 0;
+  }
+  .banner-desc {
+    font-size: 14px;
+    color: rgba(245,245,240,0.4);
+    line-height: 1.6;
+    max-width: 260px;
+  }
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(245,245,240,0.3);
+    padding: 12px 28px;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--white);
+    text-decoration: none;
+    transition: all 0.25s ease;
+    cursor: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .btn-outline:hover {
+    background: var(--white);
+    color: var(--black);
+  }
+
+  /* ---- CATEGORIAS ---- */
+  #categories {
+    padding: 120px 48px;
+  }
+
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    margin-top: 0;
+  }
+
+  .cat-card {
+    aspect-ratio: 3/4;
+    position: relative;
+    overflow: hidden;
+    cursor: none;
+    display: flex;
+    align-items: flex-end;
+    background: var(--gray);
+    border: 1px solid rgba(245,245,240,0.04);
+    transition: border-color 0.3s ease;
+  }
+  .cat-card:hover { border-color: rgba(245,245,240,0.15); }
+
+  .cat-bg {
+    position: absolute;
+    inset: 0;
+    transition: transform 0.6s cubic-bezier(0.23,1,0.32,1), opacity 0.4s ease;
+  }
+  .cat-card:hover .cat-bg { transform: scale(1.04); opacity: 0.8; }
+
+  .cat-content {
+    position: relative;
+    z-index: 2;
+    padding: 28px 24px;
+    width: 100%;
+    background: linear-gradient(to top, rgba(10,10,10,0.9) 0%, transparent 100%);
+  }
+
+  .cat-icon {
+    width: 36px; height: 36px;
+    margin-bottom: 12px;
+    opacity: 0.7;
+  }
+  .cat-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(245,245,240,0.4);
+    margin-bottom: 6px;
+    display: block;
+  }
+  .cat-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .cat-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(245,245,240,0.35);
+    text-decoration: none;
+    transition: color 0.25s ease, gap 0.25s ease;
+  }
+  .cat-card:hover .cat-arrow { color: var(--white); gap: 10px; }
+
+  /* cat color accents */
+  .cat-1 .cat-bg { background: radial-gradient(ellipse at 50% 0%, rgba(139,92,246,0.3) 0%, rgba(10,10,10,0) 60%), var(--gray); }
+  .cat-2 .cat-bg { background: radial-gradient(ellipse at 50% 0%, rgba(245,245,240,0.08) 0%, rgba(10,10,10,0) 60%), var(--gray); }
+  .cat-3 .cat-bg { background: radial-gradient(ellipse at 50% 0%, rgba(56,189,248,0.2) 0%, rgba(10,10,10,0) 60%), var(--gray); }
+  .cat-4 .cat-bg { background: radial-gradient(ellipse at 50% 0%, rgba(249,115,22,0.25) 0%, rgba(10,10,10,0) 60%), var(--gray); }
+
+  /* ---- FOOTER ---- */
+  footer {
+    border-top: 1px solid rgba(245,245,240,0.06);
+    padding: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 2;
+    position: relative;
+  }
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: rgba(245,245,240,0.15);
+    letter-spacing: -1px;
+  }
+  .footer-copy {
+    font-size: 12px;
+    color: rgba(245,245,240,0.2);
+    letter-spacing: 1px;
+  }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* Running ticker */
+  .ticker {
+    overflow: hidden;
+    border-top: 1px solid rgba(245,245,240,0.06);
+    border-bottom: 1px solid rgba(245,245,240,0.06);
+    padding: 14px 0;
+    background: var(--off-black);
+    position: relative;
+    z-index: 2;
+  }
+  .ticker-inner {
+    display: flex;
+    white-space: nowrap;
+    animation: ticker-scroll 24s linear infinite;
+  }
+  .ticker-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 24px;
+    padding-right: 48px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 4px;
+    color: rgba(245,245,240,0.2);
+  }
+  .ticker-dot {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: rgba(245,245,240,0.2);
+    display: inline-block;
+  }
+  @keyframes ticker-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+<canvas id="bg-canvas"></canvas>
+<div class="noise"></div>
+
+<!-- NAV OVERLAY -->
+<nav class="nav-overlay" id="nav-overlay">
+  <ul class="nav-links">
+    <li><a href="#hero" onclick="closeNav()">Início</a></li>
+    <li><a href="#collection" onclick="closeNav()">Coleção</a></li>
+    <li><a href="#experiencia" onclick="closeNav()">Experiência</a></li>
+    <li><a href="#categories" onclick="closeNav()">Categorias</a></li>
+    <li><a href="#" onclick="closeNav()">Contato</a></li>
+  </ul>
+</nav>
+
+<!-- HEADER -->
+<header>
+  <div class="header-left">
+    <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="logo-wrap">
+    <a href="#hero" class="logo">BUD.</a>
+  </div>
+
+  <div class="header-right">
+    <a href="#experiencia" class="header-icon" title="Experiência">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+    </a>
+    <div class="cart-wrap">
+      <a href="#" class="header-icon" title="Sacola">
+        <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      </a>
+      <div class="cart-badge">0</div>
+    </div>
+  </div>
+</header>
+
+<!-- HERO BANNER -->
+<section id="hero">
+  <div class="hero-slides">
+
+    <div class="hero-slide active" id="slide-0">
+      <div class="slide-bg slide-1-bg"></div>
+      <div class="hero-content">
+        <span class="hero-tag">Nova Coleção · 2025</span>
+        <h1 class="hero-title">DROP<br>01</h1>
+        <p class="hero-sub">Streetwear com identidade. Cada peça conta uma história.</p>
+        <a href="#collection" class="hero-cta">Explorar Coleção →</a>
+      </div>
+    </div>
+
+    <div class="hero-slide" id="slide-1">
+      <div class="slide-bg slide-2-bg"></div>
+      <div class="hero-content">
+        <span class="hero-tag">Edição Limitada</span>
+        <h1 class="hero-title">CINCO<br>STRAINS</h1>
+        <p class="hero-sub">Cinco estampas exclusivas. Cinco experiências únicas.</p>
+        <a href="#experiencia" class="hero-cta">Ver Experiência →</a>
+      </div>
+    </div>
+
+    <div class="hero-slide" id="slide-2">
+      <div class="slide-bg slide-3-bg"></div>
+      <div class="hero-content">
+        <span class="hero-tag">Bud. Streetwear</span>
+        <h1 class="hero-title">ARTE<br>VIVA</h1>
+        <p class="hero-sub">Design brasileiro com alma. Vista o que você sente.</p>
+        <a href="#collection" class="hero-cta">Comprar Agora →</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="hero-dots">
+    <button class="hero-dot active" onclick="goToSlide(0)"></button>
+    <button class="hero-dot" onclick="goToSlide(1)"></button>
+    <button class="hero-dot" onclick="goToSlide(2)"></button>
+  </div>
+
+  <!-- Drip SVG -->
+  <div class="drip-container">
+    <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="display:block; width:100%; height:60px;">
+      <path d="M0,0 L1440,0 L1440,20 
+        Q1350,20 1340,40 Q1330,60 1320,40 Q1310,20 1280,20
+        Q1240,20 1230,50 Q1220,60 1210,50 Q1200,20 1160,20
+        Q1100,20 1090,45 Q1080,60 1070,45 Q1060,20 1020,20
+        Q980,20 970,38 Q960,55 950,38 Q940,20 900,20
+        Q860,20 850,42 Q840,60 830,42 Q820,20 780,20
+        Q740,20 730,35 Q720,55 710,35 Q700,20 660,20
+        Q620,20 610,48 Q600,60 590,48 Q580,20 540,20
+        Q500,20 490,36 Q480,58 470,36 Q460,20 420,20
+        Q380,20 370,44 Q360,60 350,44 Q340,20 300,20
+        Q260,20 250,40 Q240,58 230,40 Q220,20 180,20
+        Q140,20 130,46 Q120,60 110,46 Q100,20 60,20
+        Q30,20 20,38 Q10,55 0,40 Z" fill="#0a0a0a"/>
+    </svg>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <div class="ticker-item">PURPLE GORILLA <span class="ticker-dot"></span> LEMON HAZE <span class="ticker-dot"></span> BANANA KUSH <span class="ticker-dot"></span> ICE DREAM <span class="ticker-dot"></span> MANGA ROSA <span class="ticker-dot"></span></div>
+    <div class="ticker-item">PURPLE GORILLA <span class="ticker-dot"></span> LEMON HAZE <span class="ticker-dot"></span> BANANA KUSH <span class="ticker-dot"></span> ICE DREAM <span class="ticker-dot"></span> MANGA ROSA <span class="ticker-dot"></span></div>
+    <div class="ticker-item">PURPLE GORILLA <span class="ticker-dot"></span> LEMON HAZE <span class="ticker-dot"></span> BANANA KUSH <span class="ticker-dot"></span> ICE DREAM <span class="ticker-dot"></span> MANGA ROSA <span class="ticker-dot"></span></div>
+    <div class="ticker-item">PURPLE GORILLA <span class="ticker-dot"></span> LEMON HAZE <span class="ticker-dot"></span> BANANA KUSH <span class="ticker-dot"></span> ICE DREAM <span class="ticker-dot"></span> MANGA ROSA <span class="ticker-dot"></span></div>
+  </div>
+</div>
+
+<!-- COLLECTION CAROUSEL -->
+<section id="collection">
+  <div class="inner">
+    <div class="section-label">Coleção Drop 01</div>
+    <h2 class="section-title reveal">A COLEÇÃO</h2>
+
+    <div class="carousel-wrap" id="carousel">
+
+      <!-- Purple Gorilla -->
+      <div class="shirt-card" data-index="0">
+        <div class="shirt-visual">
+          <div class="shirt-glow" style="background: var(--purple);"></div>
+          <svg class="tshirt-icon" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M60 20 L20 50 L40 70 L50 65 L50 210 L150 210 L150 65 L160 70 L180 50 L140 20 L120 30 C120 42 80 42 80 30 Z" fill="#1a1a1a" stroke="rgba(245,245,240,0.12)" stroke-width="1.5"/>
+            <!-- Gorilla icon in purple -->
+            <circle cx="100" cy="110" r="28" fill="rgba(139,92,246,0.15)"/>
+            <path d="M88 100 Q88 88 100 88 Q112 88 112 100 L112 108 Q112 118 100 120 Q88 118 88 108 Z" fill="#8B5CF6" opacity="0.9"/>
+            <circle cx="93" cy="101" r="3" fill="rgba(245,245,240,0.8)"/>
+            <circle cx="107" cy="101" r="3" fill="rgba(245,245,240,0.8)"/>
+            <path d="M92 112 Q100 117 108 112" stroke="rgba(245,245,240,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+            <text x="100" y="148" text-anchor="middle" fill="rgba(139,92,246,0.8)" font-size="9" font-family="Arial" font-weight="bold" letter-spacing="2">PURPLE GORILLA</text>
+          </svg>
+        </div>
+        <div class="shirt-info">
+          <div class="strain-name">Purple Gorilla</div>
+          <div class="strain-type">Indica</div>
+          <div class="shirt-effects">
+            <span class="effect-pill">Relaxante</span>
+            <span class="effect-pill">Frutado</span>
+          </div>
+          <div class="strain-price" style="margin-top:16px;">R$ 129,90</div>
+        </div>
+      </div>
+
+      <!-- Lemon Haze -->
+      <div class="shirt-card" data-index="1">
+        <div class="shirt-visual">
+          <div class="shirt-glow" style="background: var(--green);"></div>
+          <svg class="tshirt-icon" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M60 20 L20 50 L40 70 L50 65 L50 210 L150 210 L150 65 L160 70 L180 50 L140 20 L120 30 C120 42 80 42 80 30 Z" fill="#1a1a1a" stroke="rgba(245,245,240,0.12)" stroke-width="1.5"/>
+            <circle cx="100" cy="108" r="24" fill="rgba(34,197,94,0.15)"/>
+            <path d="M100 84 C108 90 116 98 116 108 C116 122 108 130 100 132 C92 130 84 122 84 108 C84 98 92 90 100 84 Z" fill="#22C55E" opacity="0.85"/>
+            <line x1="100" y1="84" x2="100" y2="132" stroke="rgba(245,245,240,0.3)" stroke-width="1"/>
+            <line x1="84" y1="108" x2="116" y2="108" stroke="rgba(245,245,240,0.3)" stroke-width="1"/>
+            <!-- drips -->
+            <circle cx="100" cy="135" r="2.5" fill="#22C55E" opacity="0.6"/>
+            <circle cx="100" cy="142" r="1.8" fill="#22C55E" opacity="0.4"/>
+            <circle cx="100" cy="148" r="1.2" fill="#22C55E" opacity="0.2"/>
+            <text x="100" y="160" text-anchor="middle" fill="rgba(34,197,94,0.8)" font-size="9" font-family="Arial" font-weight="bold" letter-spacing="2">LEMON HAZE</text>
+          </svg>
+        </div>
+        <div class="shirt-info">
+          <div class="strain-name">Lemon Haze</div>
+          <div class="strain-type">Sativa</div>
+          <div class="shirt-effects">
+            <span class="effect-pill">Energético</span>
+            <span class="effect-pill">Cítrico</span>
+          </div>
+          <div class="strain-price" style="margin-top:16px;">R$ 129,90</div>
+        </div>
+      </div>
+
+      <!-- Banana Kush -->
+      <div class="shirt-card" data-index="2">
+        <div class="shirt-visual">
+          <div class="shirt-glow" style="background: var(--yellow);"></div>
+          <svg class="tshirt-icon" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M60 20 L20 50 L40 70 L50 65 L50 210 L150 210 L150 65 L160 70 L180 50 L140 20 L120 30 C120 42 80 42 80 30 Z" fill="#1a1a1a" stroke="rgba(245,245,240,0.12)" stroke-width="1.5"/>
+            <circle cx="100" cy="108" r="26" fill="rgba(250,204,21,0.12)"/>
+            <!-- banana shape -->
+            <path d="M82 120 Q78 102 90 90 Q100 82 112 88 Q108 84 98 88 Q88 96 88 112 Q90 124 100 128 Q90 128 82 120 Z" fill="#FACC15" opacity="0.9"/>
+            <path d="M82 120 Q86 130 98 132 Q112 134 118 122 Q122 112 114 104 Q108 98 112 88 Q120 94 120 108 Q120 124 108 132 Q94 140 82 128 Z" fill="#EAB308" opacity="0.9"/>
+            <text x="100" y="152" text-anchor="middle" fill="rgba(250,204,21,0.8)" font-size="9" font-family="Arial" font-weight="bold" letter-spacing="2">BANANA KUSH</text>
+          </svg>
+        </div>
+        <div class="shirt-info">
+          <div class="strain-name">Banana Kush</div>
+          <div class="strain-type">Híbrida</div>
+          <div class="shirt-effects">
+            <span class="effect-pill">Criativo</span>
+            <span class="effect-pill">Tropical</span>
+          </div>
+          <div class="strain-price" style="margin-top:16px;">R$ 129,90</div>
+        </div>
+      </div>
+
+      <!-- Ice Dream -->
+      <div class="shirt-card" data-index="3">
+        <div class="shirt-visual">
+          <div class="shirt-glow" style="background: var(--blue);"></div>
+          <svg class="tshirt-icon" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M60 20 L20 50 L40 70 L50 65 L50 210 L150 210 L150 65 L160 70 L180 50 L140 20 L120 30 C120 42 80 42 80 30 Z" fill="#1a1a1a" stroke="rgba(245,245,240,0.12)" stroke-width="1.5"/>
+            <circle cx="100" cy="108" r="26" fill="rgba(56,189,248,0.1)"/>
+            <!-- ice cube shapes -->
+            <rect x="86" y="90" width="22" height="22" rx="3" fill="#38BDF8" opacity="0.8" transform="rotate(-8 97 101)"/>
+            <rect x="96" y="100" width="20" height="20" rx="3" fill="#7DD3FC" opacity="0.7" transform="rotate(5 106 110)"/>
+            <rect x="80" y="105" width="18" height="18" rx="3" fill="#0EA5E9" opacity="0.75" transform="rotate(-3 89 114)"/>
+            <!-- shine -->
+            <path d="M90 94 L93 94 L90 97 Z" fill="rgba(245,245,240,0.6)"/>
+            <path d="M100 102 L103 102 L100 105 Z" fill="rgba(245,245,240,0.5)"/>
+            <text x="100" y="148" text-anchor="middle" fill="rgba(56,189,248,0.8)" font-size="9" font-family="Arial" font-weight="bold" letter-spacing="2">ICE DREAM</text>
+          </svg>
+        </div>
+        <div class="shirt-info">
+          <div class="strain-name">Ice Dream</div>
+          <div class="strain-type">Sativa</div>
+          <div class="shirt-effects">
+            <span class="effect-pill">Elevado</span>
+            <span class="effect-pill">Gelado</span>
+          </div>
+          <div class="strain-price" style="margin-top:16px;">R$ 129,90</div>
+        </div>
+      </div>
+
+      <!-- Manga Rosa -->
+      <div class="shirt-card" data-index="4">
+        <div class="shirt-visual">
+          <div class="shirt-glow" style="background: var(--pink);"></div>
+          <svg class="tshirt-icon" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M60 20 L20 50 L40 70 L50 65 L50 210 L150 210 L150 65 L160 70 L180 50 L140 20 L120 30 C120 42 80 42 80 30 Z" fill="#1a1a1a" stroke="rgba(245,245,240,0.12)" stroke-width="1.5"/>
+            <circle cx="100" cy="108" r="26" fill="rgba(236,72,153,0.12)"/>
+            <!-- mango shape -->
+            <path d="M100 82 C118 82 128 94 126 110 C124 126 114 134 100 134 C86 134 76 126 74 110 C72 94 82 82 100 82 Z" fill="#EC4899" opacity="0.85"/>
+            <path d="M100 82 C100 82 104 78 100 74 Q97 70 100 66" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- highlight -->
+            <ellipse cx="90" cy="96" rx="8" ry="5" fill="rgba(245,245,240,0.15)" transform="rotate(-20 90 96)"/>
+            <!-- drip -->
+            <circle cx="100" cy="137" r="2.5" fill="#EC4899" opacity="0.5"/>
+            <circle cx="100" cy="143" r="1.8" fill="#EC4899" opacity="0.3"/>
+            <text x="100" y="158" text-anchor="middle" fill="rgba(236,72,153,0.8)" font-size="9" font-family="Arial" font-weight="bold" letter-spacing="2">MANGA ROSA</text>
+          </svg>
+        </div>
+        <div class="shirt-info">
+          <div class="strain-name">Manga Rosa</div>
+          <div class="strain-type">Híbrida</div>
+          <div class="shirt-effects">
+            <span class="effect-pill">Eufórico</span>
+            <span class="effect-pill">Floral</span>
+          </div>
+          <div class="strain-price" style="margin-top:16px;">R$ 129,90</div>
+        </div>
+      </div>
+
+    </div><!-- /carousel-wrap -->
+
+    <div class="carousel-controls">
+      <button class="carousel-arrow" onclick="prevCard()">←</button>
+      <div class="carousel-counter">
+        <span class="cur" id="cur-num">1</span><span>/</span><span>5</span>
+      </div>
+      <button class="carousel-arrow" onclick="nextCard()">→</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- LAUNCH BANNER -->
+<section id="launch-banner">
+  <div class="banner-inner">
+    <div class="banner-left">
+      <span class="banner-tag">Em Breve</span>
+      <div class="banner-headline">NOVO LANÇAMENTO<br>A CAMINHO</div>
+    </div>
+    <div class="banner-right">
+      <p class="banner-desc">Cadastre-se para ser o primeiro a saber quando o próximo drop estiver disponível.</p>
+      <a href="#" class="btn-outline">Notifique-me →</a>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section id="categories">
+  <div class="section-label reveal">Navegue por</div>
+  <h2 class="section-title reveal">CATEGORIAS</h2>
+
+  <div class="cat-grid">
+
+    <div class="cat-card cat-1">
+      <div class="cat-bg"></div>
+      <div class="cat-content">
+        <svg class="cat-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 6 L30 6 L30 30 L6 30 Z" stroke="rgba(139,92,246,0.6)" stroke-width="1.5" fill="none"/>
+          <path d="M10 18 L26 18 M18 10 L18 26" stroke="rgba(139,92,246,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span class="cat-label">Novo</span>
+        <div class="cat-title">Lançamento</div>
+        <a href="#" class="cat-arrow">Ver todos →</a>
+      </div>
+    </div>
+
+    <div class="cat-card cat-2">
+      <div class="cat-bg"></div>
+      <div class="cat-content">
+        <svg class="cat-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 8 L6 14 L18 26 L30 14 L26 8 Z" stroke="rgba(245,245,240,0.4)" stroke-width="1.5" fill="none"/>
+          <text x="18" y="17" text-anchor="middle" fill="rgba(245,245,240,0.4)" font-size="7" font-weight="bold" font-family="Arial">BUD.</text>
+        </svg>
+        <span class="cat-label">Essenciais</span>
+        <div class="cat-title">Bud.</div>
+        <a href="#" class="cat-arrow">Ver todos →</a>
+      </div>
+    </div>
+
+    <div class="cat-card cat-3">
+      <div class="cat-bg"></div>
+      <div class="cat-content">
+        <svg class="cat-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="18" cy="18" r="8" stroke="rgba(56,189,248,0.6)" stroke-width="1.5" fill="none"/>
+          <circle cx="18" cy="18" r="3" fill="rgba(56,189,248,0.6)"/>
+          <path d="M18 4 L18 8 M18 28 L18 32 M4 18 L8 18 M28 18 L32 18" stroke="rgba(56,189,248,0.4)" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span class="cat-label">Os efeitos</span>
+        <div class="cat-title">Experiência</div>
+        <a href="#experiencia" class="cat-arrow">Ver todos →</a>
+      </div>
+    </div>
+
+    <div class="cat-card cat-4">
+      <div class="cat-bg"></div>
+      <div class="cat-content">
+        <svg class="cat-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="12" width="24" height="16" rx="2" stroke="rgba(249,115,22,0.6)" stroke-width="1.5" fill="none"/>
+          <path d="M12 12 L12 9 C12 7 14 6 18 6 C22 6 24 7 24 9 L24 12" stroke="rgba(249,115,22,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M14 20 L22 20 M18 17 L18 23" stroke="rgba(249,115,22,0.4)" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span class="cat-label">Arte na pele</span>
+        <div class="cat-title">Estampas</div>
+        <a href="#" class="cat-arrow">Ver todas →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">BUD.</div>
+  <div class="footer-copy">© 2025 Bud. Todos os direitos reservados.</div>
+</footer>
+
+<script>
+// Cursor
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+(function animCursor() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  cursor.style.transform = `translate(${mx - 6}px, ${my - 6}px)`;
+  ring.style.transform = `translate(${rx - 18}px, ${ry - 18}px)`;
+  requestAnimationFrame(animCursor);
+})();
+document.querySelectorAll('a, button, .shirt-card, .cat-card').forEach(el => {
+  el.addEventListener('mouseenter', () => { cursor.style.transform += ' scale(2)'; });
+  el.addEventListener('mouseleave', () => { cursor.style.transform = cursor.style.transform.replace(' scale(2)', ''); });
+});
+
+// Nav
+function toggleNav() {
+  const nav = document.getElementById('nav-overlay');
+  const ham = document.getElementById('hamburger');
+  nav.classList.toggle('open');
+  ham.classList.toggle('open');
+}
+function closeNav() {
+  document.getElementById('nav-overlay').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+}
+
+// Hero slider
+let currentSlide = 0;
+const slides = document.querySelectorAll('.hero-slide');
+const dots = document.querySelectorAll('.hero-dot');
+function goToSlide(n) {
+  slides[currentSlide].classList.remove('active');
+  dots[currentSlide].classList.remove('active');
+  currentSlide = n;
+  slides[currentSlide].classList.add('active');
+  dots[currentSlide].classList.add('active');
+}
+setInterval(() => { goToSlide((currentSlide + 1) % 3); }, 5000);
+
+// Carousel
+const positions = ['pos-left-2','pos-left-1','pos-center','pos-right-1','pos-right-2'];
+const cards = document.querySelectorAll('.shirt-card');
+let centerIndex = 2;
+
+function updateCarousel() {
+  cards.forEach((card, i) => {
+    card.className = 'shirt-card';
+    const offset = i - centerIndex;
+    if (offset === 0) card.classList.add('pos-center');
+    else if (offset === -1) card.classList.add('pos-left-1');
+    else if (offset === 1) card.classList.add('pos-right-1');
+    else if (offset <= -2) card.classList.add('pos-left-2');
+    else card.classList.add('pos-right-2');
+  });
+  document.getElementById('cur-num').textContent = centerIndex + 1;
+}
+
+function nextCard() {
+  centerIndex = (centerIndex + 1) % cards.length;
+  updateCarousel();
+}
+function prevCard() {
+  centerIndex = (centerIndex - 1 + cards.length) % cards.length;
+  updateCarousel();
+}
+
+updateCarousel();
+
+// Scroll reveal
+const reveals = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+reveals.forEach(el => obs.observe(el));
+
+// BG Canvas — paint blobs
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+const colors = ['rgba(139,92,246,', 'rgba(249,115,22,', 'rgba(34,197,94,', 'rgba(236,72,153,', 'rgba(56,189,248,'];
+const blobs = Array.from({length: 6}, (_, i) => ({
+  x: Math.random() * window.innerWidth,
+  y: Math.random() * window.innerHeight,
+  r: 200 + Math.random() * 300,
+  vx: (Math.random() - 0.5) * 0.3,
+  vy: (Math.random() - 0.5) * 0.3,
+  color: colors[i % colors.length],
+  alpha: 0.03 + Math.random() * 0.04
+}));
+
+function drawBlobs() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  blobs.forEach(b => {
+    b.x += b.vx; b.y += b.vy;
+    if (b.x < -b.r) b.x = canvas.width + b.r;
+    if (b.x > canvas.width + b.r) b.x = -b.r;
+    if (b.y < -b.r) b.y = canvas.height + b.r;
+    if (b.y > canvas.height + b.r) b.y = -b.r;
+    const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
+    g.addColorStop(0, b.color + b.alpha + ')');
+    g.addColorStop(1, b.color + '0)');
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+    ctx.fillStyle = g;
+    ctx.fill();
+  });
+  requestAnimationFrame(drawBlobs);
+}
+drawBlobs();
+</script>
+</body>
+</html>
