@@ -93,8 +93,14 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 32px;
-    background: linear-gradient(to bottom, rgba(10,10,10,0.95) 0%, transparent 100%);
-    backdrop-filter: blur(2px);
+    background: transparent;
+    backdrop-filter: none;
+    transition: background 0.35s ease, backdrop-filter 0.35s ease, box-shadow 0.35s ease;
+  }
+  header.scrolled {
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 1px 0 rgba(245,245,240,0.06);
   }
 
   .header-left, .header-right {
@@ -113,15 +119,16 @@
     z-index: 3;
   }
 
+  /* logo overflow effect */
   .logo {
     display: block;
     position: relative;
-    top: 20px;
+    top: 14px;
     user-select: none;
     transition: transform 0.3s ease;
   }
   .logo img {
-    height: 72px;
+    height: 60px;
     width: auto;
     display: block;
     filter: drop-shadow(0 4px 20px rgba(255,255,255,0.08));
@@ -227,7 +234,8 @@
   /* ---- HERO ---- */
   #hero {
     position: relative;
-    height: 100vh;
+    height: 78vh;
+    min-height: 520px;
     overflow: hidden;
     z-index: 2;
   }
@@ -242,7 +250,7 @@
     flex-direction: column;
     opacity: 0;
     transition: opacity 0.8s ease;
-    padding: 120px 48px 80px;
+    padding: 80px 48px 60px;
   }
   .hero-slide.active { opacity: 1; }
 
@@ -274,22 +282,22 @@
     letter-spacing: 4px;
     text-transform: uppercase;
     color: rgba(245,245,240,0.4);
-    margin-bottom: 24px;
+    margin-bottom: 16px;
     display: block;
   }
   .hero-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(80px, 14vw, 180px);
+    font-size: clamp(64px, 10vw, 130px);
     line-height: 0.9;
     letter-spacing: -2px;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
   }
   .hero-sub {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 300;
     color: rgba(245,245,240,0.5);
     letter-spacing: 1px;
-    margin-bottom: 48px;
+    margin-bottom: 32px;
   }
   .hero-cta {
     display: inline-flex;
@@ -398,7 +406,7 @@
 
   .carousel-wrap {
     position: relative;
-    height: 560px;
+    height: 620px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -418,30 +426,31 @@
   }
 
   .shirt-card.pos-center {
-    transform: translateX(0) scale(1);
+    transform: translateX(0) scale(1.08);
     z-index: 5;
     filter: none;
-    box-shadow: 0 8px 48px rgba(10,10,10,0.12);
+    box-shadow: 0 24px 80px rgba(10,10,10,0.18), 0 4px 24px rgba(10,10,10,0.1);
+    border-color: rgba(10,10,10,0.12);
   }
   .shirt-card.pos-left-1 {
-    transform: translateX(-380px) scale(0.82);
+    transform: translateX(-370px) scale(0.78);
     z-index: 3;
-    filter: brightness(0.75);
+    filter: brightness(0.65) saturate(0.7);
   }
   .shirt-card.pos-right-1 {
-    transform: translateX(380px) scale(0.82);
+    transform: translateX(370px) scale(0.78);
     z-index: 3;
-    filter: brightness(0.75);
+    filter: brightness(0.65) saturate(0.7);
   }
   .shirt-card.pos-left-2 {
-    transform: translateX(-660px) scale(0.68);
+    transform: translateX(-620px) scale(0.62);
     z-index: 1;
-    filter: brightness(0.5);
+    filter: brightness(0.4) saturate(0.4);
   }
   .shirt-card.pos-right-2 {
-    transform: translateX(660px) scale(0.68);
+    transform: translateX(620px) scale(0.62);
     z-index: 1;
-    filter: brightness(0.5);
+    filter: brightness(0.4) saturate(0.4);
   }
 
   .shirt-visual {
@@ -934,7 +943,7 @@
         <div class="shirt-visual">
           <div class="shirt-glow" style="background: var(--purple);"></div>
           <img class="shirt-img" src="images/purple-gorilla-1.png" alt="Purple Gorilla">
-          <button class="flip-btn" onclick="flipCard(this)">Ver verso</button>
+          <button class="flip-btn" onclick="flipCard(this)">Ver costas</button>
         </div>
         <div class="shirt-info">
           <div class="strain-name">Purple Gorilla</div>
@@ -952,7 +961,7 @@
         <div class="shirt-visual">
           <div class="shirt-glow" style="background: var(--green);"></div>
           <img class="shirt-img" src="images/lemon-haze-1.png" alt="Lemon Haze">
-          <button class="flip-btn" onclick="flipCard(this)">Ver verso</button>
+          <button class="flip-btn" onclick="flipCard(this)">Ver costas</button>
         </div>
         <div class="shirt-info">
           <div class="strain-name">Lemon Haze</div>
@@ -970,7 +979,7 @@
         <div class="shirt-visual">
           <div class="shirt-glow" style="background: var(--yellow);"></div>
           <img class="shirt-img" src="images/banana-kush-1.png" alt="Banana Kush">
-          <button class="flip-btn" onclick="flipCard(this)">Ver verso</button>
+          <button class="flip-btn" onclick="flipCard(this)">Ver costas</button>
         </div>
         <div class="shirt-info">
           <div class="strain-name">Banana Kush</div>
@@ -988,7 +997,7 @@
         <div class="shirt-visual">
           <div class="shirt-glow" style="background: var(--blue);"></div>
           <img class="shirt-img" src="images/ice-dream-1.png" alt="Ice Dream">
-          <button class="flip-btn" onclick="flipCard(this)">Ver verso</button>
+          <button class="flip-btn" onclick="flipCard(this)">Ver costas</button>
         </div>
         <div class="shirt-info">
           <div class="strain-name">Ice Dream</div>
@@ -1006,7 +1015,7 @@
         <div class="shirt-visual">
           <div class="shirt-glow" style="background: var(--pink);"></div>
           <img class="shirt-img" src="images/manga-rosa-1.png" alt="Manga Rosa">
-          <button class="flip-btn" onclick="flipCard(this)">Ver verso</button>
+          <button class="flip-btn" onclick="flipCard(this)">Ver costas</button>
         </div>
         <div class="shirt-info">
           <div class="strain-name">Manga Rosa</div>
@@ -1117,6 +1126,16 @@
 </footer>
 
 <script>
+// Header scroll behavior
+const header = document.querySelector('header');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 40) {
+    header.classList.add('scrolled');
+  } else {
+    header.classList.remove('scrolled');
+  }
+}, { passive: true });
+
 // Cursor
 const cursor = document.getElementById('cursor');
 const ring = document.getElementById('cursor-ring');
@@ -1209,7 +1228,7 @@ function flipCard(btn) {
     img.src = `images/${slugs[idx]}-${side}.png`;
     img.style.opacity = '1';
   }, 200);
-  btn.textContent = side === 1 ? 'Ver verso' : 'Ver frente';
+  btn.textContent = side === 1 ? 'Ver costas' : 'Ver frente';
 }
 
 updateCarousel();
