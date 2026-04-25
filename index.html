@@ -587,6 +587,7 @@
     transform: translateY(-50%);
     z-index: 10;
     opacity: 0.4;
+    isolation: isolate;
   }
   .carousel-arrow.prev { left: 60px; }
   .carousel-arrow.next { right: 60px; }
@@ -1234,7 +1235,7 @@ document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; })
   ring.style.transform = `translate(${rx - 18}px, ${ry - 18}px)`;
   requestAnimationFrame(animCursor);
 })();
-document.querySelectorAll('a, button, .shirt-card, .cat-card').forEach(el => {
+document.querySelectorAll('a, button:not(.carousel-arrow), .shirt-card, .cat-card').forEach(el => {
   el.addEventListener('mouseenter', () => { cursor.style.transform += ' scale(2)'; });
   el.addEventListener('mouseleave', () => { cursor.style.transform = cursor.style.transform.replace(' scale(2)', ''); });
 });
@@ -1307,6 +1308,32 @@ function goToCard(n) {
   centerIndex = n;
   updateCarousel();
 }
+
+// Touch/swipe support
+const carouselEl = document.getElementById('carousel');
+let touchStartX = 0;
+let touchStartY = 0;
+let isDragging = false;
+
+carouselEl.addEventListener('touchstart', e => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+  isDragging = false;
+}, { passive: true });
+
+carouselEl.addEventListener('touchmove', e => {
+  const dx = Math.abs(e.touches[0].clientX - touchStartX);
+  const dy = Math.abs(e.touches[0].clientY - touchStartY);
+  if (dx > dy && dx > 8) isDragging = true;
+}, { passive: true });
+
+carouselEl.addEventListener('touchend', e => {
+  if (!isDragging) return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (dx < -50) nextCard();
+  else if (dx > 50) prevCard();
+  isDragging = false;
+});
 
 // Flip frente/costas
 function flipCard(btn) {
