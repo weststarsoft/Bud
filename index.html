@@ -34,19 +34,19 @@
 
   /* CUSTOM CURSOR */
   .cursor {
-    width: 12px; height: 12px;
+    width: 10px; height: 10px;
     background: var(--white);
     border-radius: 50%;
     position: fixed;
     top: 0; left: 0;
     pointer-events: none;
     z-index: 9999;
-    transition: transform 0.15s ease, width 0.2s ease, height 0.2s ease, background 0.2s ease;
-    mix-blend-mode: difference;
+    transition: transform 0.15s ease, width 0.2s ease, height 0.2s ease;
+    border: 1px solid rgba(245,245,240,0.4);
   }
   .cursor-ring {
-    width: 36px; height: 36px;
-    border: 1px solid rgba(245,245,240,0.4);
+    width: 32px; height: 32px;
+    border: 1px solid rgba(245,245,240,0.25);
     border-radius: 50%;
     position: fixed;
     top: 0; left: 0;
@@ -1324,14 +1324,14 @@ carouselEl.addEventListener('touchstart', e => {
 carouselEl.addEventListener('touchmove', e => {
   const dx = Math.abs(e.touches[0].clientX - touchStartX);
   const dy = Math.abs(e.touches[0].clientY - touchStartY);
-  if (dx > dy && dx > 8) isDragging = true;
+  if (dx > dy && dx > 5) isDragging = true;
 }, { passive: true });
 
 carouselEl.addEventListener('touchend', e => {
   if (!isDragging) return;
   const dx = e.changedTouches[0].clientX - touchStartX;
-  if (dx < -50) nextCard();
-  else if (dx > 50) prevCard();
+  if (dx < -20) nextCard();
+  else if (dx > 20) prevCard();
   isDragging = false;
 });
 
